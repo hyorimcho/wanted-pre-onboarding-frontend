@@ -28,7 +28,6 @@ export const signIn = async (email, password) => {
         password,
       },
     });
-    console.log("res", res);
     return res.data;
   } catch (error) {
     if (error instanceof AxiosError) {
