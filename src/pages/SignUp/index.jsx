@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { signUp } from "../../api";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ const SignUp = () => {
       ...values,
       [e.target.name]: e.target.value,
     });
-    // validate();
   };
 
   const handleBlur = (e) => {
@@ -72,7 +72,16 @@ const SignUp = () => {
   useEffect(() => {
     setErrors(validate());
   }, [validate]);
-  console.log(touched);
+
+  const onSubmit = async () => {
+    const { email, password } = values;
+    const res = await signUp(email, password);
+    localStorage.setItem("token", res.access_token);
+    if (res.access_token) {
+      navigate("/signin");
+    }
+  };
+
   return (
     <Form onSubmit={handleSubmit}>
       <h1>회원 가입</h1>
@@ -106,7 +115,7 @@ const SignUp = () => {
         {touched.password && errors.password && <span>{errors.password}</span>}
       </InputContainer>
       <ButtonContainer>
-        <button type="submit" disabled={disabled}>
+        <button type="submit" disabled={disabled} onClick={onSubmit}>
           회원가입 하기
         </button>
         <button
