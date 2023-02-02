@@ -1,31 +1,129 @@
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { signIn } from "../../api";
 
 const SignIn = () => {
+  const [values, setValues] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+  const [disabled, setDisabled] = useState(true);
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false,
+  });
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setValues({
+      ...values,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleBlur = (e) => {
+    setTouched({
+      ...touched,
+      [e.target.name]: true,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setTouched({
+      email: true,
+      password: true,
+    });
+    const errors = validate();
+    setErrors(errors);
+    if (Object.values(errors).some((v) => v)) {
+      return;
+    }
+  };
+
+  const validate = useCallback(() => {
+    const errors = {
+      email: "",
+      password: "",
+    };
+
+    const emailCheck = () => {
+      var regex = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+      return values.email !== "" && values.email !== "undefined" && regex.test(values.email);
+    };
+
+    if (!emailCheck(values.email)) {
+      errors.email = "이메일 형식에 맞게 입력 해 주세요";
+    }
+    if (!values.password || values.password.length < 8) {
+      errors.password = "비밀번호를 8자리 이상 입력하세요";
+    }
+    if (!errors.email && !errors.password) {
+      setDisabled(false);
+    }
+    return errors;
+  }, [values]);
+
+  useEffect(() => {
+    setErrors(validate());
+  }, [validate]);
+
+  const onSubmit = async () => {
+    const { email, password } = values;
+    const res = await signIn(email, password);
+    if (localStorage.getItem("token") && res) {
+      navigate("/todo");
+    } else {
+      alert("이메일과 비밀번호를 다시 확인 해 주세요");
+    }
+  };
   return (
-    <Form>
+    <Form onSubmit={handleSubmit}>
       <h1>TodoList</h1>
       <InputContainer>
         <div>
           <label htmlFor="email">이메일</label>
-          <input id="email" type="text" data-testid="email-input" />
+          <input
+            id="email"
+            type="text"
+            placeholder="이메일을 입력하세요"
+            name="email"
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            // autoFocus
+          />
+          {touched.email && errors.email && <span>{errors.email}</span>}
         </div>
         <div>
           <label htmlFor="password">비밀번호</label>
-          <input id="password" type="password" data-testid="password-input" />
+          <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="비밀번호를 입력하세요"
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
         </div>
+        {touched.password && errors.password && <span>{errors.password}</span>}
       </InputContainer>
       <ButtonContainer>
-        <button type="submit" signin-button>
+        <button type="submit" data-testid="signin-button" onClick={onSubmit} disabled={disabled}>
           로그인
         </button>
         <button
+          type="button"
+          data-testid="signup-button"
           onClick={() => {
             navigate("/signup");
           }}
-          type="button"
-          data-testid="signup-button"
         >
           회원가입 하기
         </button>
@@ -57,6 +155,15 @@ const InputContainer = styled.div`
     width: 100%;
     line-height: 10px;
     padding: 0.625rem 0.9375rem;
+    background-color: #ffd4d4;
+    &:focus {
+      background-color: white;
+    }
+  }
+  span {
+    color: red;
+    font-size: 14px;
+    font-weight: 600;
   }
 `;
 
@@ -75,6 +182,10 @@ const ButtonContainer = styled.div`
       background-color: #aacb73;
       /* color: white; */
       transition: 0.2s;
+    }
+    :disabled {
+      background-color: grey;
+      cursor: default;
     }
   }
 `;
