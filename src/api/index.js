@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { request } from "./api";
 
 export const signUp = async (email, password) => {
@@ -12,10 +11,9 @@ export const signUp = async (email, password) => {
     });
     return res.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
+    if (error) {
       console.log(error.response);
     }
-    return false;
   }
 };
 
@@ -30,14 +28,13 @@ export const signIn = async (email, password) => {
     });
     return res.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
+    if (error) {
       console.log(error.response);
     }
-    return false;
   }
 };
 
-export const createTodo = async (id, todo, isComplete, userId, token) => {
+export const createTodo = async (todo, token) => {
   try {
     const res = await request("/todos", {
       method: "POST",
@@ -45,18 +42,14 @@ export const createTodo = async (id, todo, isComplete, userId, token) => {
         Authorization: `Bearer ${token}`,
       },
       data: {
-        id,
         todo,
-        isComplete,
-        userId,
       },
     });
     return res.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.log(error.message);
+    if (error) {
+      console.log(error.response);
     }
-    return false;
   }
 };
 
@@ -65,54 +58,50 @@ export const getTodos = async (token) => {
     const res = await request("/todos", {
       method: "GET",
       headers: {
-        Authorization:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQHRlc3QuY29tIiwic3ViIjoyLCJpYXQiOjE2NzUyNTE0MjAsImV4cCI6MTY3NTg1NjIyMH0.VsygSrAtPyto0pVXXGOOhm77GV_nnsDqfuFs329Mpq8",
+        Authorization: `Bearer ${token}`,
       },
     });
-    console.log("res", res);
     return res.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.log();
+    if (error) {
+      console.log(error.response);
     }
-    return false;
   }
 };
 
-export const updateTodo = async (todo, isComplete, token) => {
+export const updateTodo = async (todo, isCompleted, id, token) => {
   try {
-    const res = await request("/todos/:id", {
+    const res = await request(`/todos/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
       },
       data: {
         todo,
-        isComplete,
+        isCompleted,
       },
     });
     return res.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.log(error.message);
+    if (error) {
+      console.log(error.response);
     }
-    return false;
   }
 };
 
-export const deleteTodo = async (token) => {
+export const deleteTodo = async (id, token) => {
   try {
-    const res = await request("/todos/:id", {
+    const res = await request(`/todos/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+    console.log("res", res);
     return res.data;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      console.log(error.message);
+    if (error) {
+      console.log(error.response);
     }
   }
-  return false;
 };
