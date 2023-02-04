@@ -1,50 +1,78 @@
 import styled from "styled-components";
 import { RiDeleteBin5Line, RiAddFill, RiEdit2Fill } from "react-icons/ri";
-import { useState } from "react";
-import { createTodo } from "../../api";
+import { useEffect, useRef, useState } from "react";
+import { createTodo, deleteTodo, getTodos, updateTodo } from "../../api";
+import Lists from "./Lists";
+
+const token = localStorage.getItem("token");
 
 const Todo = () => {
-  const [values, setValues] = useState("");
-  const onSubmit = async (data) => {
-    const { id, todo, isComplete, userId } = data;
-    const test = await createTodo(id, todo, isComplete, userId);
-    console.log(test);
+  const [value, setValue] = useState("");
+  const inputRef = useRef(null);
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const res = await getTodos(token);
+      setTodos(res);
+    };
+    getData();
+  }, []);
+
+  const onChange = (e) => {
+    setValue(e.target.value);
   };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (!e.target.value) {
+      return;
+    }
+    addTodo(value);
+    setValue("");
+    inputRef.current.focus();
+  };
+
+  const editTodo = async (value, isCompleted, token) => {
+    const { id } = todos;
+    const res = await updateTodo(value, isCompleted, id, token);
+  };
+
+  const addTodo = async (value) => {
+    if (!value) {
+      alert("할 일을 입력해주세요!");
+      return;
+    }
+    const res = await createTodo(value, token);
+    setTodos([...todos, res]);
+  };
+
   return (
     <Container>
       <TodoBlock>
         <Title>
-          <h1>할 일 목록</h1>
-          <TodoInput onSubmit={onSubmit}>
+          <h1>To do list</h1>
+          <TodoInput onSubmit={onSubmit} todos={todos} setTodos={setTodos}>
             <input
               type="text"
               name="value"
               placeholder="할 일을 입력해주세요"
-              // value={value}
+              value={value}
               data-testid="new-todo-input"
+              onChange={onChange}
+              ref={inputRef}
             />
             <Btn type="submit" data-testid="new-todo-add-button">
               <RiAddFill />
             </Btn>
           </TodoInput>
-          <TodoList>
-            <label>
-              <input type="checkbox" defaultChecked={false} /> <p></p>
-              <BtnWrapper>
-                <Btn type="submit" data-testid="modify-button">
-                  <RiEdit2Fill />
-                </Btn>
-                <Btn type="submit" data-testid="delete-button">
-                  <RiDeleteBin5Line />
-                </Btn>
-              </BtnWrapper>
-            </label>
-          </TodoList>
+          <Lists todos={todos} setTodos={setTodos} />
         </Title>
       </TodoBlock>
     </Container>
   );
 };
+
 export default Todo;
 
 const Container = styled.div`
@@ -76,22 +104,34 @@ const TodoInput = styled.form`
   display: flex;
   justify-content: space-between;
   border-radius: 10px;
+  align-items: center;
   input {
+    width: 100%;
     border: none;
     padding: 8px;
     line-height: 1.5;
     background-color: transparent;
   }
   button {
+    line-height: 1;
     margin-right: 0.5rem;
-    padding: auto 0;
   }
 `;
 const TodoList = styled.li`
+  display: flex;
   list-style: none;
+  justify-content: space-between;
+  margin-bottom: 6px;
   input {
     margin-right: 8px;
   }
+  div {
+    display: flex;
+  }
+`;
+
+const Text = styled.p`
+  text-decoration: ${(props) => (props.isCompleted === true ? "line-through" : "none")};
 `;
 const BtnWrapper = styled.div`
   position: relative;
