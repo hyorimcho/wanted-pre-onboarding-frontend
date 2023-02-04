@@ -76,12 +76,15 @@ const SignIn = () => {
   const onSubmit = async () => {
     const { email, password } = values;
     const res = await signIn(email, password);
-    if (localStorage.getItem("token") && res) {
+    console.log(res);
+    localStorage.setItem("token", res.access_token);
+    if (res.access_token) {
       navigate("/todo");
     } else {
       alert("이메일과 비밀번호를 다시 확인 해 주세요");
     }
   };
+
   return (
     <Form onSubmit={handleSubmit}>
       <h1>TodoList</h1>
