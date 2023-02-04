@@ -121,7 +121,7 @@ const SignUp = () => {
         <button
           type="button"
           onClick={() => {
-            navigate("/signin");
+            navigate("/");
           }}
         >
           돌아가기
