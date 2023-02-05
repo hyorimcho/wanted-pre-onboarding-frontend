@@ -6,17 +6,27 @@ import { deleteTodo, updateTodo } from "../../api";
 const token = localStorage.getItem("token");
 
 const List = ({ todo, todos, setTodos }) => {
-  const [isCompleted, setIsCompleted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState("");
+
+  const handleCompleChange = async (id) => {
+    let newTodos = todos.map((todo) => {
+      if (todo.id === id) {
+        todo.isCompleted = !todo.isCompleted;
+      }
+      return todo;
+    });
+    const res = await updateTodo(todo.todo, todo.isCompleted, id, token);
+    setTodos(newTodos);
+  };
   const delTodo = async (id) => {
     const res = await deleteTodo(id, token);
-    // let newTodos = todos.filter((todo) => todo.id !== id);
-    // setTodos(newTodos);
+    let newTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(newTodos);
   };
 
   const editTodo = async (value) => {
-    const { id } = todo;
+    const { id, isCompleted } = todo;
     const res = await updateTodo(value, isCompleted, id, token);
     if (!value) {
       alert("수정할 할 일을 입력해 주세요");
@@ -44,19 +54,13 @@ const List = ({ todo, todos, setTodos }) => {
   return (
     <TodoList key={todo.id} id={todo.id}>
       <div>
-        <input
-          type="checkbox"
-          defaultChecked={false}
-          onClick={() => {
-            setIsCompleted(!isCompleted);
-          }}
-        />
+        <input type="checkbox" checked={todo.isCompleted} onChange={() => handleCompleChange(todo.id)} />
         {isEditing ? (
           <form onSubmit={onSubmit}>
-            <input value={value} onChange={onChange} />
+            <input value={value} onChange={onChange} autoFocus />
           </form>
         ) : (
-          <Text isCompleted={isCompleted}>{todo.todo}</Text>
+          <Text isCompleted={todo.isCompleted}>{todo.todo}</Text>
         )}
       </div>
       <BtnWrapper>
@@ -123,7 +127,7 @@ const TodoList = styled.li`
 `;
 
 const Text = styled.p`
-  text-decoration: ${(props) => (props.isCompleted === true ? "line-through" : "none")};
+  text-decoration: ${(props) => (props.isCompleted ? "line-through" : "none")};
 `;
 const BtnWrapper = styled.div`
   position: relative;
