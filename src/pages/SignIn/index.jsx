@@ -76,7 +76,6 @@ const SignIn = () => {
   const onSubmit = async () => {
     const { email, password } = values;
     const res = await signIn(email, password);
-    console.log(res);
     localStorage.setItem("token", res.access_token);
     if (res.access_token) {
       navigate("/todo");
