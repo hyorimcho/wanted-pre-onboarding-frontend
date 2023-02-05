@@ -2,19 +2,23 @@ import styled from "styled-components";
 import { RiAddFill } from "react-icons/ri";
 import { FiLogOut } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
-import { createTodo, getTodos, updateTodo } from "../../api";
+import { createTodo, getTodos } from "../../api";
 import { useNavigate } from "react-router-dom";
 import Lists from "./Lists";
 
 const token = localStorage.getItem("token");
 
 const Todo = () => {
+  const navigate = useNavigate();
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
   const [todos, setTodos] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!localStorage.token) {
+      alert("로그인이 필요합니다");
+      navigate("/signin");
+    }
     const getData = async () => {
       const res = await getTodos(token);
       setTodos(res);
@@ -38,7 +42,7 @@ const Todo = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/signin");
   };
 
   const addTodo = async (value) => {
