@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { RiDeleteBin5Line, RiEdit2Fill } from "react-icons/ri";
 import styled from "styled-components";
-import { deleteTodo } from "../../api";
+import { deleteTodo, updateTodo } from "../../api";
 
 const token = localStorage.getItem("token");
 
-const List = ({ todo, setTodos }) => {
+const List = ({ todo, todos, setTodos }) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState("");
@@ -15,22 +15,46 @@ const List = ({ todo, setTodos }) => {
     // setTodos(newTodos);
   };
 
+  const editTodo = async (value) => {
+    const { id } = todo;
+    const res = await updateTodo(value, isCompleted, id, token);
+    if (!value) {
+      alert("수정할 할 일을 입력해 주세요");
+      return;
+    }
+    const newTodo = todos.map((todo) => {
+      if (todo.id === res.id) {
+        return res;
+      } else return todo;
+    });
+    setTodos(newTodo);
+    setValue(res.todo);
+    setIsEditing(false);
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    editTodo(value);
+  };
+
   const onChange = (e) => {
     setValue(e.target.value);
   };
 
   return (
-    <TodoList
-      key={todo.id}
-      id={todo.id}
-      onClick={() => {
-        setIsCompleted(!isCompleted);
-      }}
-    >
+    <TodoList key={todo.id} id={todo.id}>
       <div>
-        <input type="checkbox" defaultChecked={false} />
+        <input
+          type="checkbox"
+          defaultChecked={false}
+          onClick={() => {
+            setIsCompleted(!isCompleted);
+          }}
+        />
         {isEditing ? (
-          <input value={todo.todo} autoFocus onChange={onChange} />
+          <form onSubmit={onSubmit}>
+            <input value={value} onChange={onChange} />
+          </form>
         ) : (
           <Text isCompleted={isCompleted}>{todo.todo}</Text>
         )}
@@ -38,7 +62,13 @@ const List = ({ todo, setTodos }) => {
       <BtnWrapper>
         {isEditing ? (
           <>
-            <Btn type="submit" data-testid="modify-button">
+            <Btn
+              type="submit"
+              data-testid="modify-button"
+              onClick={() => {
+                editTodo(value);
+              }}
+            >
               수정하기
             </Btn>
             <Btn
