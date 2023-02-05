@@ -34,13 +34,10 @@ export const signIn = async (email, password) => {
   }
 };
 
-export const createTodo = async (todo, token) => {
+export const createTodo = async (todo) => {
   try {
     const res = await request("/todos", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       data: {
         todo,
       },
@@ -53,13 +50,10 @@ export const createTodo = async (todo, token) => {
   }
 };
 
-export const getTodos = async (token) => {
+export const getTodos = async () => {
   try {
     const res = await request("/todos", {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
     return res.data;
   } catch (error) {
@@ -69,13 +63,10 @@ export const getTodos = async (token) => {
   }
 };
 
-export const updateTodo = async (todo, isCompleted, id, token) => {
+export const updateTodo = async (todo, isCompleted, id) => {
   try {
     const res = await request(`/todos/${id}`, {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       data: {
         todo,
         isCompleted,
@@ -89,13 +80,10 @@ export const updateTodo = async (todo, isCompleted, id, token) => {
   }
 };
 
-export const deleteTodo = async (id, token) => {
+export const deleteTodo = async (id) => {
   try {
     const res = await request(`/todos/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     });
     return res.data;
   } catch (error) {

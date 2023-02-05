@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { RiDeleteBin5Line, RiEdit2Fill } from "react-icons/ri";
+import { RiDeleteBin5Line, RiEdit2Fill, RiCheckFill } from "react-icons/ri";
+import { ImCancelCircle } from "react-icons/im";
 import styled from "styled-components";
 import { deleteTodo, updateTodo } from "../../api";
-
-const token = localStorage.getItem("token");
 
 const List = ({ todo, todos, setTodos }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -16,18 +15,18 @@ const List = ({ todo, todos, setTodos }) => {
       }
       return todo;
     });
-    const res = await updateTodo(todo.todo, todo.isCompleted, id, token);
+    const res = await updateTodo(todo.todo, todo.isCompleted, id);
     setTodos(newTodos);
   };
   const delTodo = async (id) => {
-    const res = await deleteTodo(id, token);
+    const res = await deleteTodo(id);
     let newTodos = todos.filter((todo) => todo.id !== id);
     setTodos(newTodos);
   };
 
   const editTodo = async (value) => {
     const { id, isCompleted } = todo;
-    const res = await updateTodo(value, isCompleted, id, token);
+    const res = await updateTodo(value, isCompleted, id);
     if (!value) {
       alert("수정할 할 일을 입력해 주세요");
       return;
@@ -72,8 +71,9 @@ const List = ({ todo, todos, setTodos }) => {
               onClick={() => {
                 editTodo(value);
               }}
+              edit
             >
-              수정하기
+              <RiCheckFill />
             </Btn>
             <Btn
               type="button"
@@ -81,7 +81,7 @@ const List = ({ todo, todos, setTodos }) => {
                 setIsEditing(false);
               }}
             >
-              취소하기
+              <ImCancelCircle />
             </Btn>
           </>
         ) : (
@@ -92,6 +92,7 @@ const List = ({ todo, todos, setTodos }) => {
               onClick={() => {
                 setIsEditing(true);
               }}
+              edit
             >
               <RiEdit2Fill />
             </Btn>
@@ -140,6 +141,6 @@ const Btn = styled.button`
   font-size: 18px;
   cursor: pointer;
   &:hover {
-    color: #09bb00;
+    color: ${(props) => (props.edit ? "#04ce04" : "red")};
   }
 `;

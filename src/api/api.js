@@ -8,3 +8,13 @@ const axiosConfig = {
 };
 
 export const request = axios.create(axiosConfig);
+
+request.interceptors.request.use((config) => {
+  const token = localStorage.token;
+
+  if (token !== null) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
