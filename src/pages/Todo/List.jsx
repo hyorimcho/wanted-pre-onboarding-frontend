@@ -15,11 +15,11 @@ const List = ({ todo, todos, setTodos }) => {
       }
       return todo;
     });
-    const res = await updateTodo(todo.todo, todo.isCompleted, id);
+    await updateTodo(todo.todo, todo.isCompleted, id);
     setTodos(newTodos);
   };
   const delTodo = async (id) => {
-    const res = await deleteTodo(id);
+    await deleteTodo(id);
     let newTodos = todos.filter((todo) => todo.id !== id);
     setTodos(newTodos);
   };
