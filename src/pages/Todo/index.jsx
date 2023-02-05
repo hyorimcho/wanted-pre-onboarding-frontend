@@ -1,7 +1,9 @@
 import styled from "styled-components";
-import { RiDeleteBin5Line, RiAddFill, RiEdit2Fill } from "react-icons/ri";
+import { RiAddFill } from "react-icons/ri";
+import { FiLogOut } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
-import { createTodo, deleteTodo, getTodos, updateTodo } from "../../api";
+import { createTodo, getTodos, updateTodo } from "../../api";
+import { useNavigate } from "react-router-dom";
 import Lists from "./Lists";
 
 const token = localStorage.getItem("token");
@@ -10,6 +12,7 @@ const Todo = () => {
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
   const [todos, setTodos] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getData = async () => {
@@ -33,9 +36,9 @@ const Todo = () => {
     inputRef.current.focus();
   };
 
-  const editTodo = async (value, isCompleted, token) => {
-    const { id } = todos;
-    const res = await updateTodo(value, isCompleted, id, token);
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   const addTodo = async (value) => {
@@ -50,21 +53,29 @@ const Todo = () => {
   return (
     <Container>
       <TodoBlock>
+        <LogoutBtn
+          type="submit"
+          onClick={() => {
+            logout();
+          }}
+        >
+          <FiLogOut />
+        </LogoutBtn>
         <Title>
-          <h1>To do list</h1>
+          <h1>할 일🐰</h1>
           <TodoInput onSubmit={onSubmit} todos={todos} setTodos={setTodos}>
             <input
               type="text"
               name="value"
-              placeholder="할 일을 입력해주세요"
+              placeholder="할 일을 추가 해 주세요"
               value={value}
               data-testid="new-todo-input"
               onChange={onChange}
               ref={inputRef}
             />
-            <Btn type="submit" data-testid="new-todo-add-button">
+            <button type="submit" data-testid="new-todo-add-button">
               <RiAddFill />
-            </Btn>
+            </button>
           </TodoInput>
           <Lists todos={todos} setTodos={setTodos} />
         </Title>
@@ -99,8 +110,8 @@ const Title = styled.div`
   }
 `;
 const TodoInput = styled.form`
-  margin: 20px 0;
-  background-color: #ffd4d4;
+  margin: 40px 0 30px 0;
+  background-color: #cde990;
   display: flex;
   justify-content: space-between;
   border-radius: 10px;
@@ -113,37 +124,26 @@ const TodoInput = styled.form`
     background-color: transparent;
   }
   button {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
     line-height: 1;
     margin-right: 0.5rem;
-  }
-`;
-const TodoList = styled.li`
-  display: flex;
-  list-style: none;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  input {
-    margin-right: 8px;
-  }
-  div {
-    display: flex;
+    cursor: pointer;
+    &:hover {
+      color: navy;
+    }
   }
 `;
 
-const Text = styled.p`
-  text-decoration: ${(props) => (props.isCompleted === true ? "line-through" : "none")};
-`;
-const BtnWrapper = styled.div`
-  position: relative;
-  display: flex;
-  gap: 6px;
-`;
-const Btn = styled.button`
+const LogoutBtn = styled.button`
   background-color: transparent;
   border: none;
-  font-size: 18px;
   cursor: pointer;
+  font-size: 22px;
+  display: flex;
+  margin-left: auto;
   &:hover {
-    color: #09bb00;
+    color: red;
   }
 `;
