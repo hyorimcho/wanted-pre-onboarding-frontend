@@ -97,7 +97,6 @@ export const deleteTodo = async (id, token) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("res", res);
     return res.data;
   } catch (error) {
     if (error) {
