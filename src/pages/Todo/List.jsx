@@ -56,7 +56,7 @@ const List = ({ todo, todos, setTodos }) => {
         <input type="checkbox" checked={todo.isCompleted} onChange={() => handleCompleChange(todo.id)} />
         {isEditing ? (
           <form onSubmit={onSubmit}>
-            <input value={value} onChange={onChange} autoFocus />
+            <input value={value} onChange={onChange} autoFocus data-testid="modify-input" />
           </form>
         ) : (
           <Text isCompleted={todo.isCompleted}>{todo.todo}</Text>
