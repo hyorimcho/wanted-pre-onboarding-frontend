@@ -133,9 +133,14 @@ const SignUp = () => {
 export default SignUp;
 
 const Form = styled.form`
+  padding: 30px;
+  margin-top: 50px;
+  background: #fff;
+  border-radius: 10px;
   max-width: 450px;
   margin-inline: auto;
   margin-top: 200px;
+  box-shadow: -9px 17px 13px rgb(0 0 0 / 16%);
   h1 {
     text-align: center;
     margin: 30px 0 20px 0;
@@ -154,10 +159,7 @@ const InputContainer = styled.div`
     width: 100%;
     line-height: 10px;
     padding: 0.625rem 0.9375rem;
-    background-color: #ffd4d4;
-    &:focus {
-      background-color: white;
-    }
+    background-color: #fff;
   }
   span {
     color: red;
@@ -170,7 +172,7 @@ const ButtonContainer = styled.div`
   display: flex;
   margin-top: 30px;
   button {
-    width: 200px;
+    width: 180px;
     margin-inline: auto;
     padding: 10px 20px;
     cursor: pointer;
