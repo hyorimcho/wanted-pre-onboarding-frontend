@@ -1,6 +1,6 @@
 # 원티드 프리온보딩 프론트엔드 - 선발 과제
 
-## [배포 주소](https://github.com/hyorimcho/wanted-pre-onboarding-frontend)
+## [배포 주소](https://wanted-hyorimcho-todo.netlify.app/signin)
 
 ## 사용 기술
 
